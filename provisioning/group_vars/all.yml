@@ -1,0 +1,12 @@
+java_package: oracle-java8-installer
+spark_version: 1.4.0
+spark_download_url: http://d3kbcqa49mib13.cloudfront.net
+apt_repos:
+  - 'ppa:webupd8team/java'
+maven_version: 3.3.3
+maven_download_url: http://wwwftp.ciril.fr
+spark_notebook_version: 0.5.2
+r_packages:
+  - 'dplyr'
+  - 'knitr'
+  - 'ggplot2'

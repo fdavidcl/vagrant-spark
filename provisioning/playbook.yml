@@ -1,0 +1,99 @@
+---
+- hosts: all
+  vars:
+    maven:
+        MAVEN_HOME:  "/opt/apache-maven-{{ maven_version }}"
+  tasks:
+
+    - name: Update repositories
+      apt_repository: repo={{ item }} state=present update_cache=yes
+      with_items: apt_repos
+
+    - name:  install curl
+      apt: pkg=curl state=latest
+
+    - name:  install git
+      apt: pkg=git state=latest
+
+    - name: install tree
+      apt: pkg=tree state=latest
+
+    - name: install vim
+      apt: pkg=vim state=latest
+
+    # Accept Oracle license
+    - name: Accept Oracle license prior JDK installation
+      shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections; echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections creates=/usr/lib/jvm/java-7-oracle
+
+    # Install Java
+    - name: Install java
+      apt: pkg={{java_package}} state=present
+
+    - shell: if [ -d /opt/spark-{{ spark_version }}-bin-hadoop2.6 ]; then echo yes; else echo no; fi;
+      register: spark_version_exists
+      always_run: True
+
+    # Download spark
+    - name: Download spark
+      get_url: url={{ spark_download_url }}/spark-{{ spark_version }}-bin-hadoop2.6.tgz dest=/tmp/spark-{{ spark_version }}.tgz mode=0440
+      when: spark_version_exists.stdout == 'no'
+
+    # Uncompress spark
+    - name: Uncompress spark
+      unarchive: src=/tmp/spark-{{ spark_version }}.tgz dest=/opt/ copy=no
+      when: spark_version_exists.stdout == 'no'
+
+    # symlink
+    - name: spark symlink
+      file: src=/opt/spark-{{ spark_version }}-bin-hadoop2.6 dest=/opt/spark state=link
+
+    - shell: if [ -d /opt/apache-maven-{{ maven_version }} ]; then echo yes; else echo no; fi;
+      register: maven_version_exists
+      always_run: True
+  
+    # dl nmaven
+    - name: download maven
+      get_url: url={{ maven_download_url }}/pub/apache/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz dest=/tmp/apache-maven-{{ maven_version }}-bin.tgz mode=0440
+      when: maven_version_exists.stdout == 'no'
+
+    # Uncompress maven
+    - name: Uncompress maven
+      unarchive: src=/tmp/apache-maven-{{ maven_version }}-bin.tgz dest=/opt/ copy=no
+      when: maven_version_exists.stdout == 'no'
+
+    - shell: if [ -f /opt/zeppelin/built-$(git rev-parse --short=7 HEAD) ]; then echo yes; else echo no; fi;
+      register: zeppelin_hash_built
+      always_run: True
+
+    # clone zeppelin
+    - name: clone zeppelin
+      git: repo=https://github.com/apache/incubator-zeppelin dest=/opt/zeppelin
+
+    # build zeppelin
+    - name: build zeppelin
+      shell: /opt/apache-maven-{{ maven_version }}/bin/mvn clean install -DskipTests; touch /opt/zeppelin/built-"$(git rev-parse --short=7 HEAD)"
+      environment: maven
+      when: zeppelin_hash_built.stdout == 'no'
+      args:
+        chdir: /opt/zeppelin
+
+    # dl spark-notebook
+    - name: download spark-notebook
+      get_url: url=https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz  dest=/tmp/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz
+
+    # uncompress spark-notebook
+    - name: uncompress spark-notebook
+      unarchive: src=/tmp/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz dest=/opt/ copy=no
+
+    # symlink spark-notebook
+    - name: symlink spark notebook
+      file: src=/opt/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0 dest=/opt/spark-notebook state=link 
+
+    # install R
+    - name: install R
+      apt: pkg=r-base state=latest
+  
+    # install r packages
+    - name: adding a few R packages
+      command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "if (! ('{{item}}' %in% installed.packages()[,'Package'])) install.packages(pkgs='{{item}}', repos=c('http://cran.rstudio.com/'))"
+      with_items: r_packages
