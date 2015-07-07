@@ -6,13 +6,13 @@ A simple VM to work with Spark, including :
 
 ## Provisioning with Vagrant 
 
-The source code can be used to provision the virtual machine wioth Vagrant and Ansible, with a simple :
+The source code can be used to provision the virtual machine with Vagrant and Ansible, with a simple :
 
 ```
 vagrant up
 ```
 
-which shall talke a bit of time
+which shall take a bit of time
 
 ## Using a pre-build VM
 
