@@ -16,7 +16,7 @@ which shall take a bit of time
 
 ## Using a pre-build VM
 
-The resulting VM is available on Hashicorp's Atlas platform (formerly Vagrant Cloud).
+The resulting VM is available on Hashicorp's [Atlas platform](https://atlas.hashicorp.com/fredcons/boxes/spark-handson) (formerly Vagrant Cloud).
 Here are a few commands for a faster start up time (with a bigger download upfront) :
 
 ```
