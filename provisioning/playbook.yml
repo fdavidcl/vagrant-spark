@@ -8,6 +8,9 @@
     - name: install pycurl package in order to use the apt_repository module
       apt: pkg=python-pycurl state=present
 
+    - name: datastax repository key
+      apt_key: url=http://debian.datastax.com/debian/repo_key state=present
+
     - name: Update repositories
       apt_repository: repo={{ item }} state=present update_cache=yes
       with_items: apt_repos
@@ -23,6 +26,12 @@
 
     - name: install vim
       apt: pkg=vim state=latest
+
+    - name: install npm
+      apt: pkg=npm state=latest
+
+    - name: install phantomjs
+      apt: pkg=phantomjs state=latest
 
     # Accept Oracle license
     - name: Accept Oracle license prior JDK installation
@@ -91,3 +100,22 @@
     # symlink spark-notebook
     - name: symlink spark notebook
       file: src=/opt/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0 dest=/opt/spark-notebook state=link 
+
+    # install cassandra
+    - name : install datastax community
+      apt: pkg=dsc22
+
+    - name : install cassandra tools
+      apt: pkg=cassandra-tools
+
+    - name : install opscenter
+      apt: pkg=opscenter
+
+    - name : service opscenter
+      service: name=opscenterd state=started
+
+    - name : install datastax-agent
+      apt: pkg=datastax-agent
+
+    - name : service datastax-agent
+      service: name=datastax-agent state=started
