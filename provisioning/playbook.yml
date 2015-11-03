@@ -71,7 +71,7 @@
 
     # build zeppelin
     - name: build zeppelin
-      shell: /opt/apache-maven-{{ maven_version }}/bin/mvn clean package -DskipTests; touch /opt/zeppelin/built-"$(git rev-parse --short=7 HEAD)"
+      shell: /opt/apache-maven-{{ maven_version }}/bin/mvn clean package -DskipTests -Pspark-{{ zeppelin_spark_version }} > /tmp/maven.log; touch /opt/zeppelin/built-"$(git rev-parse --short=7 HEAD)"
       environment: maven
       when: zeppelin_hash_built.stdout == 'no'
       args:
