@@ -82,7 +82,7 @@
 
     # dl spark-notebook
     - name: download spark-notebook
-      get_url: url=https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz  dest=/tmp/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz
+      get_url: url=https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz  dest=/tmp/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz validate_certs=no
 
     # uncompress spark-notebook
     - name: uncompress spark-notebook
