@@ -5,7 +5,7 @@ apt_repos:
   - 'ppa:webupd8team/java'
 maven_version: 3.3.3
 maven_download_url: http://wwwftp.ciril.fr
-spark_notebook_version: 0.5.2
+spark_notebook_version: 0.6.1
 r_packages:
   - 'dplyr'
   - 'knitr'
