@@ -5,6 +5,9 @@
         MAVEN_HOME:  "/opt/apache-maven-{{ maven_version }}"
   tasks:
 
+    - name: install pycurl package in order to use the apt_repository module
+      apt: pkg=python-pycurl state=present
+
     - name: Update repositories
       apt_repository: repo={{ item }} state=present update_cache=yes
       with_items: apt_repos
