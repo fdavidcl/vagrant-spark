@@ -4,6 +4,7 @@ zeppelin_spark_version: 1.5
 spark_download_url: http://d3kbcqa49mib13.cloudfront.net
 apt_repos:
   - 'ppa:webupd8team/java'
+  - '"deb http://debian.datastax.com/community stable main"'
 maven_version: 3.3.3
 maven_download_url: http://wwwftp.ciril.fr
 spark_notebook_version: 0.6.1
