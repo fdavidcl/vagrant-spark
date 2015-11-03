@@ -1,5 +1,5 @@
 java_package: oracle-java8-installer
-spark_version: 1.4.0
+spark_version: 1.5.0
 spark_download_url: http://d3kbcqa49mib13.cloudfront.net
 apt_repos:
   - 'ppa:webupd8team/java'
