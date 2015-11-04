@@ -7,7 +7,3 @@ apt_repos:
 maven_version: 3.3.3
 maven_download_url: http://wwwftp.ciril.fr
 spark_notebook_version: 0.6.1
-r_packages:
-  - 'dplyr'
-  - 'knitr'
-  - 'ggplot2'
