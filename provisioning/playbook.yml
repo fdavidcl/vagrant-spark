@@ -27,6 +27,9 @@
     - name: install vim
       apt: pkg=vim state=latest
 
+    - name: install npm
+      apt: pkg=npm state=latest
+
     # Accept Oracle license
     - name: Accept Oracle license prior JDK installation
       shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections; echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections creates=/usr/lib/jvm/java-7-oracle
@@ -73,7 +76,7 @@
 
     # clone zeppelin
     - name: clone zeppelin
-      git: repo=https://github.com/apache/incubator-zeppelin dest=/opt/zeppelin
+      git: repo=https://github.com/fredcons/incubator-zeppelin dest=/opt/zeppelin
 
     # build zeppelin
     - name: build zeppelin
@@ -106,11 +109,19 @@
 
     # install cassandra
     - name : install datastax community
-      apt: pkg=dsc21=2.1.11-1
-
-    - name : install cassandra
-      apt: pkg=cassandra=2.1.11
+      apt: pkg=dsc22
 
     - name : install cassandra tools
-      apt: pkg=cassandra-tools=2.1.11
+      apt: pkg=cassandra-tools
 
+    - name : install opscenter
+      apt: pkg=opscenter
+
+    - name : service opscenter
+      service: name:opscenterd state=started
+
+    - name : install datastax-agent
+      apt: pkg=datastax-agent
+
+    - name : service datastax-agent
+      service: name:datastax-agent state=started
