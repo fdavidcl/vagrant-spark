@@ -1,8 +1,8 @@
 A simple VM to work with Spark, including : 
-- Spark 1.4
+- Spark 1.5
 - Zeppelin
 - spark-notebook
-- R and a few R packages
+- datastax community edition (with datastax agent and opscenter)
 
 ## Provisioning with Vagrant 
 
@@ -30,6 +30,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 8081, host: 8081
   config.vm.network "forwarded_port", guest: 9000, host: 9000
   config.vm.network "forwarded_port", guest: 4040, host: 4040
+  config.vm.network "forwarded_port", guest: 8888, host: 8888
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--cpus", "2"]
     vb.customize ["modifyvm", :id, "--memory", "2048"]
@@ -76,4 +77,7 @@ cd /opt/spark-notebook/ && ./bin/spark-notebook
 
 And then head to http://localhost:9000/
 
+### cassandra
 
+Cassandra services are started by default.
+The datastax opscenter can be reached at `http://localhost:8888/opscenter/`

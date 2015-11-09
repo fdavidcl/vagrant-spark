@@ -5,8 +5,16 @@
         MAVEN_HOME:  "/opt/apache-maven-{{ maven_version }}"
   tasks:
 
+    #################
+    # PREREQUISISTES
+    #################
+
     - name: install pycurl package in order to use the apt_repository module
       apt: pkg=python-pycurl state=present
+
+    ########################
+    # REPOSITORIES AND KEYS
+    ########################
 
     - name: datastax repository key
       apt_key: url=http://debian.datastax.com/debian/repo_key state=present
@@ -14,6 +22,10 @@
     - name: Update repositories
       apt_repository: repo={{ item }} state=present update_cache=yes
       with_items: apt_repos
+
+    ###################
+    # UTILITY PACKAGES
+    ###################
 
     - name:  install curl
       apt: pkg=curl state=latest
@@ -41,6 +53,24 @@
     - name: Install java
       apt: pkg={{java_package}} state=present
 
+    - shell: if [ -d /opt/apache-maven-{{ maven_version }} ]; then echo yes; else echo no; fi;
+      register: maven_version_exists
+      always_run: True
+
+    # dl nmaven
+    - name: download maven
+      get_url: url={{ maven_download_url }}/pub/apache/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz dest=/tmp/apache-maven-{{ maven_version }}-bin.tgz mode=0440
+      when: maven_version_exists.stdout == 'no'
+
+    # Uncompress maven
+    - name: Uncompress maven
+      unarchive: src=/tmp/apache-maven-{{ maven_version }}-bin.tgz dest=/opt/ copy=no
+      when: maven_version_exists.stdout == 'no'
+
+    #################
+    #     SPARK
+    #################
+
     - shell: if [ -d /opt/spark-{{ spark_version }}-bin-hadoop2.6 ]; then echo yes; else echo no; fi;
       register: spark_version_exists
       always_run: True
@@ -58,20 +88,10 @@
     # symlink
     - name: spark symlink
       file: src=/opt/spark-{{ spark_version }}-bin-hadoop2.6 dest=/opt/spark state=link
-
-    - shell: if [ -d /opt/apache-maven-{{ maven_version }} ]; then echo yes; else echo no; fi;
-      register: maven_version_exists
-      always_run: True
   
-    # dl nmaven
-    - name: download maven
-      get_url: url={{ maven_download_url }}/pub/apache/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz dest=/tmp/apache-maven-{{ maven_version }}-bin.tgz mode=0440
-      when: maven_version_exists.stdout == 'no'
-
-    # Uncompress maven
-    - name: Uncompress maven
-      unarchive: src=/tmp/apache-maven-{{ maven_version }}-bin.tgz dest=/opt/ copy=no
-      when: maven_version_exists.stdout == 'no'
+    ##################
+    #     ZEPPELIN
+    ##################
 
     - shell: if [ -f /opt/zeppelin/built-$(git rev-parse --short=7 HEAD) ]; then echo yes; else echo no; fi;
       register: zeppelin_hash_built
@@ -89,6 +109,10 @@
       args:
         chdir: /opt/zeppelin
 
+    ##################
+    #  SPARK NOTEBOOK
+    ##################
+
     # dl spark-notebook
     - name: download spark-notebook
       get_url: url=https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz  dest=/tmp/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz validate_certs=no
@@ -100,6 +124,10 @@
     # symlink spark-notebook
     - name: symlink spark notebook
       file: src=/opt/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0 dest=/opt/spark-notebook state=link 
+
+    ##################
+    #     CASSANDRA
+    ##################
 
     # install cassandra
     - name : install datastax community
