@@ -31,6 +31,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 9000, host: 9000
   config.vm.network "forwarded_port", guest: 4040, host: 4040
   config.vm.network "forwarded_port", guest: 8888, host: 8888
+  config.vm.network "forwarded_port", guest: 8989, host: 8989
+  config.vm.network "forwarded_port", guest: 2181, host: 2181
+  config.vm.network "forwarded_port", guest: 9092, host: 9092
+  # port conflict with spark
+  #config.vm.network "forwarded_port", guest: 8081, host: 8081
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--cpus", "2"]
     vb.customize ["modifyvm", :id, "--memory", "2048"]
@@ -81,3 +86,20 @@ And then head to http://localhost:9000/
 
 Cassandra services are started by default.
 The datastax opscenter can be reached at `http://localhost:8888/opscenter/`
+
+### confluent.io
+
+```
+sudo /usr/bin/zookeeper-server-start /etc/kafka/zookeeper.properties
+sudo /usr/bin/kafka-server-start /etc/kafka/server.properties
+sudo /usr/bin/schema-registry-start /etc/schema-registry/schema-registry.properties
+sudo /usr/bin/kafka-rest-start /etc/kafka-rest/kafka-rest.properties
+```
+
+### spark / kafka integration
+
+```
+sudo /usr/bin/kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partition 1 --topic spark-streaming-test
+# vanilla kafka version
+sudo /usr/bin/kafka-create-topic.sh --zookeeper localhost:2181 --replica 1 --partition 1 --topic spark-streaming-test
+```

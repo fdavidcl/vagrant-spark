@@ -19,6 +19,9 @@
     - name: datastax repository key
       apt_key: url=http://debian.datastax.com/debian/repo_key state=present
 
+    - name: confluent repository key
+      apt_key: url=http://packages.confluent.io/deb/1.0/archive.key state=present
+
     - name: Update repositories
       apt_repository: repo={{ item }} state=present update_cache=yes
       with_items: apt_repos
@@ -147,3 +150,11 @@
 
     - name : service datastax-agent
       service: name=datastax-agent state=started
+
+
+    ##################
+    #     CONFLUENT
+    ##################
+
+    - name : install confluent.io
+      apt: pkg=confluent-platform-2.10.4

@@ -30,8 +30,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 4040, host: 4040
   # datastax
   config.vm.network "forwarded_port", guest: 8888, host: 8888
-  
-  
+  # zk-web
+  config.vm.network "forwarded_port", guest: 8989, host: 8989
+  # zookeeper
+  config.vm.network "forwarded_port", guest: 2181, host: 2181
+  # kafka
+  config.vm.network "forwarded_port", guest: 9092, host: 9092
+  # schema registry
+  #config.vm.network "forwarded_port", guest: 8081, host: 8081
+  # kafka-rest
+  config.vm.network "forwarded_port", guest: 8082, host: 8082
 
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--cpus", "2"]
