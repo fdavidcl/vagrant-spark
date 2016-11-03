@@ -1,10 +1,8 @@
 A simple VM to work with Spark, including : 
 - Spark 1.5
-- Zeppelin
 - spark-notebook
-- datastax community edition (with datastax agent and opscenter)
 
-## Provisioning with Vagrant 
+## Provisioning with Vagrant
 
 The source code can be used to provision the virtual machine with Vagrant and Ansible, with a simple :
 
@@ -12,7 +10,7 @@ The source code can be used to provision the virtual machine with Vagrant and An
 vagrant up
 ```
 
-which shall take a bit of time
+which shall take a bit of time.
 
 ## Using a pre-build VM
 
@@ -53,21 +51,13 @@ vagrant ssh
 sudo su -
 ```
 
-Once connected as root, you can use the various libraries installed :
+Once connected as root, you can use the various libraries installed:
 
 ### Spark
 
 ```
 /opt/spark/bin/spark-shell
 ```
-
-### Zeppelin
-
-```
-/opt/zeppelin/bin/zeppelin.sh start
-```
-
-And then head to http://localhost:8080/
 
 ### spark-notebook
 
@@ -76,8 +66,3 @@ cd /opt/spark-notebook/ && ./bin/spark-notebook
 ```
 
 And then head to http://localhost:9000/
-
-### cassandra
-
-Cassandra services are started by default.
-The datastax opscenter can be reached at `http://localhost:8888/opscenter/`
