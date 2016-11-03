@@ -21,7 +21,9 @@
 
     - name: Update repositories
       apt_repository: repo={{ item }} state=present update_cache=yes
-      with_items: apt_repos
+      with_items:
+        - 'ppa:webupd8team/java'
+        - "deb http://debian.datastax.com/community stable main"
 
     ###################
     # UTILITY PACKAGES
@@ -52,10 +54,12 @@
     # Install Java
     - name: Install java
       apt: pkg={{java_package}} state=present
+#      apt: pkg=openjdk-7-jre state=present
 
     - shell: if [ -d /opt/apache-maven-{{ maven_version }} ]; then echo yes; else echo no; fi;
       register: maven_version_exists
-      always_run: True
+#      always_run: True
+      check_mode: no
 
     # dl nmaven
     - name: download maven
@@ -73,7 +77,7 @@
 
     - shell: if [ -d /opt/spark-{{ spark_version }}-bin-hadoop2.6 ]; then echo yes; else echo no; fi;
       register: spark_version_exists
-      always_run: True
+      check_mode: no
 
     # Download spark
     - name: Download spark
@@ -93,21 +97,21 @@
     #     ZEPPELIN
     ##################
 
-    - shell: if [ -f /opt/zeppelin/built-$(git rev-parse --short=7 HEAD) ]; then echo yes; else echo no; fi;
-      register: zeppelin_hash_built
-      always_run: True
+    # - shell: if [ -f /opt/zeppelin/built-$(git rev-parse --short=7 HEAD) ]; then echo yes; else echo no; fi;
+    #   register: zeppelin_hash_built
+    #   check_mode: no
 
-    # clone zeppelin
-    - name: clone zeppelin
-      git: repo=https://github.com/apache/incubator-zeppelin dest=/opt/zeppelin
+    # # clone zeppelin
+    # - name: clone zeppelin
+    #   git: repo=https://github.com/apache/incubator-zeppelin dest=/opt/zeppelin
 
-    # build zeppelin
-    - name: build zeppelin
-      shell: /opt/apache-maven-{{ maven_version }}/bin/mvn clean package -DskipTests -Pspark-{{ zeppelin_spark_version }} > /tmp/maven.log; touch /opt/zeppelin/built-"$(git rev-parse --short=7 HEAD)"
-      environment: maven
-      when: zeppelin_hash_built.stdout == 'no'
-      args:
-        chdir: /opt/zeppelin
+    # # build zeppelin
+    # - name: build zeppelin
+    #   shell: /opt/apache-maven-{{ maven_version }}/bin/mvn clean package -DskipTests -Pspark-{{ zeppelin_spark_version }} > /tmp/maven.log; touch /opt/zeppelin/built-"$(git rev-parse --short=7 HEAD)"
+    #   environment: maven
+    #   when: zeppelin_hash_built.stdout == 'no'
+    #   args:
+    #     chdir: /opt/zeppelin
 
     ##################
     #  SPARK NOTEBOOK
@@ -129,21 +133,21 @@
     #     CASSANDRA
     ##################
 
-    # install cassandra
-    - name : install datastax community
-      apt: pkg=dsc22
+    # # install cassandra
+    # - name : install datastax community
+    #   apt: pkg=dsc22
 
-    - name : install cassandra tools
-      apt: pkg=cassandra-tools
+    # - name : install cassandra tools
+    #   apt: pkg=cassandra-tools
 
-    - name : install opscenter
-      apt: pkg=opscenter
+    # - name : install opscenter
+    #   apt: pkg=opscenter
 
-    - name : service opscenter
-      service: name=opscenterd state=started
+    # - name : service opscenter
+    #   service: name=opscenterd state=started
 
-    - name : install datastax-agent
-      apt: pkg=datastax-agent
+    # - name : install datastax-agent
+    #   apt: pkg=datastax-agent
 
-    - name : service datastax-agent
-      service: name=datastax-agent state=started
+    # - name : service datastax-agent
+    #   service: name=datastax-agent state=started
