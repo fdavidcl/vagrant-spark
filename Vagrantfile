@@ -17,7 +17,6 @@ node_ip     = (1..SPARK_NODES).map { |n| IP_PREFIX + (100 + n).to_s }
 node_host   = (1..SPARK_NODES).map { |n| "#{HOSTNAME_PREFIX}node#{n}" }
 
 master_script = <<SCRIPT
-#!/bin/bash
 cat > /etc/hosts <<EOF
 127.0.0.1       localhost
 
@@ -32,6 +31,24 @@ ff02::2 ip6-allrouters
 #{node_ip.zip(node_host).map{|e| e.join " "}.join "\n"}
 EOF
 
+cat >> ~/.profile <<EOF
+export SPARK_HOME=/opt/spark
+export PATH=\$SPARK_HOME/bin:$PATH
+export SPARK_SLAVES=\$HOME/spark_slaves
+EOF
+
+cat > ~/spark_slaves <<EOF
+#{node_host.join "\n"}
+EOF
+
+cat > ~/.bashrc <<EOF
+spark_start_master() {
+  \$SPARK_HOME/sbin/start-master.sh
+}
+spark_start_slaves() {
+  \$SPARK_HOME/sbin/start-slaves.sh
+}
+EOF
 SCRIPT
 
 slave_script = <<SCRIPT
