@@ -1,10 +1,16 @@
-A simple VM to work with Spark, including : 
+A multi-machine Vagrant cluster to work with Spark, including:
 - Spark 1.5
 - spark-notebook
 
-## Provisioning with Vagrant
+Includes code from [fredcons/vagrant-spark](https://github.com/fredcons/vagrant-spark) and [wangqiang8511/vagrant-salt-spark](https://github.com/wangqiang8511/vagrant-salt-spark).
 
-The source code can be used to provision the virtual machine with Vagrant and Ansible, with a simple :
+## Usage
+
+Configure the `Vagrantfile` to your liking with the number of compute nodes you want. If you want a single node, set `SPARK_NODES` to `0` and use the master node.
+
+### Provisioning with Vagrant
+
+The source code can be used to provision the virtual machine with Vagrant and Ansible, with a simple
 
 ```
 vagrant up
@@ -12,46 +18,17 @@ vagrant up
 
 which shall take a bit of time.
 
-## Using a pre-build VM
+### Logging into the master node
 
-The resulting VM is available on Hashicorp's [Atlas platform](https://atlas.hashicorp.com/fredcons/boxes/spark-handson) (formerly Vagrant Cloud).
-Here are a few commands for a faster start up time (with a bigger download upfront) :
-
-```
-mkdir spark-handson && cd spark-handson
-cat <<EOT >> Vagrantfile
-VAGRANTFILE_API_VERSION = "2"
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "fredcons/spark-handson"
-  config.vm.network "private_network", ip: "192.168.33.10"
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
-  config.vm.network "forwarded_port", guest: 8081, host: 8081
-  config.vm.network "forwarded_port", guest: 9000, host: 9000
-  config.vm.network "forwarded_port", guest: 4040, host: 4040
-  config.vm.network "forwarded_port", guest: 8888, host: 8888
-  config.vm.provider "virtualbox" do |vb|
-    vb.customize ["modifyvm", :id, "--cpus", "2"]
-    vb.customize ["modifyvm", :id, "--memory", "2048"]
-  end
-end
-EOT
-vagrant up
-vagrant ssh
-```
-
-You may want to adjust the CPU / memory parameters.
-
-## Usage
-
-Once the VM is launched, you can log in with :
+Once the VM is launched, you can log in with:
 
 ```
-vagrant ssh
+vagrant ssh master
 # gaining root access
 sudo su -
 ```
 
-Once connected as root, you can use the various libraries installed:
+Once connected as root, you can use the various libraries installed.
 
 ### Spark
 
