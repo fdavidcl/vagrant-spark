@@ -35,7 +35,7 @@ Once connected as root, you can use the various libraries installed or execute a
 In this example we will provide a text file to Spark in order to count the ocurrences of each word. First, start up the cluster with
 
 ```sh
-spark_start
+spark_start # alias for /opt/spark/sbin/start-all.sh
 ```
 
 Then, compile the project with Maven and submit it to the cluster:
@@ -50,7 +50,11 @@ spark-submit --class com.examples.MainExample \
   /vagrant/examples/quijote_out
 ```
 
-When the task is completed, you will be able to see the results inside the `examples/quijote_out` directory.
+When the task is completed, you will be able to see the results inside the `examples/quijote_out` directory. Finally, stop the cluster with:
+
+```sh
+spark_stop # alias for /opt/spark/sbin/stop-all.sh
+```
 
 ### Spark
 
