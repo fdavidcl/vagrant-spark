@@ -47,7 +47,7 @@ In this example we will provide a text file to Spark in order to count the ocurr
 spark_start # alias for /opt/spark/sbin/start-all.sh
 ```
 
-You can check the actives nodes on the web GUI at `localhost:8080`.
+You can check the active nodes on the web GUI at `localhost:8080`.
 
 Then, compile the project with Maven and submit it to the cluster:
 
