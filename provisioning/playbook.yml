@@ -117,17 +117,24 @@
     #  SPARK NOTEBOOK
     ##################
 
+    - shell: if [ -d /opt/spark-notebook/ ]; then echo yes; else echo no; fi;
+      register: spark_notebook_version_exists
+      check_mode: no
+
     # dl spark-notebook
     - name: download spark-notebook
       get_url: url=https://s3.eu-central-1.amazonaws.com/spark-notebook/tgz/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz  dest=/tmp/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz validate_certs=no
+      when: spark_notebook_version_exists.stdout == 'no'
 
     # uncompress spark-notebook
     - name: uncompress spark-notebook
       unarchive: src=/tmp/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0.tgz dest=/opt/ copy=no
+      when: spark_notebook_version_exists.stdout == 'no'
 
     # symlink spark-notebook
     - name: symlink spark notebook
       file: src=/opt/spark-notebook-{{ spark_notebook_version }}-scala-2.10.4-spark-{{ spark_version }}-hadoop-2.6.0 dest=/opt/spark-notebook state=link 
+      when: spark_notebook_version_exists.stdout == 'no'
 
     ##################
     #     CASSANDRA

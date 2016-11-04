@@ -10,13 +10,18 @@ SPARK_NODES             = 2
 IP_PREFIX               = "10.211.55."
 HOSTNAME_PREFIX         = "spark-cluster-"
 
+# Master public/private keys
+# Important: generate your own keys with `ssh-keygen -t rsa`
+master_private = File.read("provisioning/master_keys/id_rsa")
+master_public = File.read("provisioning/master_keys/id_rsa.pub")
+
 # Calculate the IPs of master and compute nodes
 master_ip   = "#{IP_PREFIX}100"
 master_host = "#{HOSTNAME_PREFIX}master"
 node_ip     = (1..SPARK_NODES).map { |n| IP_PREFIX + (100 + n).to_s }
 node_host   = (1..SPARK_NODES).map { |n| "#{HOSTNAME_PREFIX}node#{n}" }
 
-master_script = <<SCRIPT
+hosts_script = <<SCRIPT
 cat > /etc/hosts <<EOF
 127.0.0.1       localhost
 
@@ -30,10 +35,14 @@ ff02::2 ip6-allrouters
 #{master_ip} #{master_host}
 #{node_ip.zip(node_host).map{|e| e.join " "}.join "\n"}
 EOF
+SCRIPT
 
-cat >> ~/.profile <<EOF
+master_script = <<SCRIPT
+#{hosts_script}
+
+cat > ~/.profile <<EOF
 export SPARK_HOME=/opt/spark
-export PATH=\$SPARK_HOME/bin:$PATH
+export PATH=\$SPARK_HOME/bin:/opt/apache-maven-3.3.9/bin/:$PATH
 export SPARK_SLAVES=\$HOME/spark_slaves
 EOF
 
@@ -42,31 +51,26 @@ cat > ~/spark_slaves <<EOF
 EOF
 
 cat > ~/.bashrc <<EOF
-spark_start_master() {
-  \$SPARK_HOME/sbin/start-master.sh
+spark_start() {
+  \$SPARK_HOME/sbin/start-all.sh
 }
-spark_start_slaves() {
-  \$SPARK_HOME/sbin/start-slaves.sh
+spark_stop() {
+  \$SPARK_HOME/sbin/stop-all.sh
 }
 EOF
+
+mkdir -p ~/.ssh
+echo "#{master_private}" > ~/.ssh/id_rsa
+chmod 0600 ~/.ssh/id_rsa
+echo "#{master_public}" > ~/.ssh/id_rsa.pub
 SCRIPT
 
 slave_script = <<SCRIPT
-cat > /etc/hosts <<EOF
-127.0.0.1       localhost
+#{hosts_script}
 
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-
-#{master_ip} #{master_host}
-#{node_ip.zip(node_host).map{|e| e.join " "}.join "\n"}
-EOF
+mkdir -p ~/.ssh
+echo "#{master_public}" > ~/.ssh/authorized_keys
 SCRIPT
-
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "precise64"
@@ -80,6 +84,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Default value: false
   config.ssh.forward_agent = true
 
+  config.vm.provision "fix-no-tty", type: "shell" do |s|
+    s.privileged = false
+    s.inline = "sudo sed -i '/tty/!s/mesg n/tty -s \\&\\& mesg n/' /root/.profile"
+  end
+  
   config.vm.provision "ansible" do |ansible|
     ansible.sudo = true 
     ansible.playbook = "provisioning/playbook.yml"
