@@ -6,11 +6,20 @@ Includes code from [fredcons/vagrant-spark](https://github.com/fredcons/vagrant-
 
 ## Usage
 
+Clone this repository: 
+
+```sh
+git clone git@github.com:fdavidcl/vagrant-spark.git
+cd vagrant-spark
+```
+
 Configure the `Vagrantfile` to your liking with the number of compute nodes you want. If you want a single node, set `SPARK_NODES` to `0` and use the master node.
 
 ### Provisioning with Vagrant
 
-The source code can be used to provision the virtual machine with Vagrant and Ansible, with a simple
+First of all, generate a pair of private/public RSA keys for the master node with `ssh-keygen -t rsa` and place them inside the `provisioning/master_keys` directory.
+
+The source code can be used to provision the virtual machines with Vagrant and Ansible, with a simple
 
 ```
 vagrant up
@@ -28,7 +37,7 @@ vagrant ssh master
 sudo su -
 ```
 
-Once connected as root, you can use the various libraries installed or execute an example program.
+Once connected as root, you can use the various libraries installed or submit a program to the cluster.
 
 ### Example
 
@@ -37,6 +46,8 @@ In this example we will provide a text file to Spark in order to count the ocurr
 ```sh
 spark_start # alias for /opt/spark/sbin/start-all.sh
 ```
+
+You can check the actives nodes on the web GUI at `localhost:8080`.
 
 Then, compile the project with Maven and submit it to the cluster:
 
@@ -58,17 +69,19 @@ spark_stop # alias for /opt/spark/sbin/stop-all.sh
 
 ### Spark
 
+To access the Spark shell, just use the command
+
 ```
-/opt/spark/bin/spark-shell
+spark-shell
 ```
 
-### spark-notebook
+### spark-notebook
 
 ```
 cd /opt/spark-notebook/ && ./bin/spark-notebook
 ```
 
-And then head to http://localhost:9000/
+And then head to `http://localhost:9000/`.
 
 ## Other resources
 
