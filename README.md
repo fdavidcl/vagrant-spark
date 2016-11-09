@@ -15,6 +15,13 @@ cd vagrant-spark
 
 Configure the `Vagrantfile` to your liking with the number of compute nodes you want. If you want a single node, set `SPARK_NODES` to `0` and use the master node.
 
+### Installing Ansible
+
+```
+pip install --user ansible
+export PATH=$HOME/.local/bin:$PATH
+```
+
 ### Provisioning with Vagrant
 
 First of all, generate a pair of private/public RSA keys for the master node with `ssh-keygen -t rsa` and place them inside the `provisioning/master_keys` directory.
