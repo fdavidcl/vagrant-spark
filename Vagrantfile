@@ -73,7 +73,7 @@ echo "#{master_public}" > ~/.ssh/authorized_keys
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "precise64"
+  config.vm.box = "ubuntu/precise64"
 
   config.vm.provider "virtualbox" do |vb|
     vb.customize ["modifyvm", :id, "--cpus", "2"]
