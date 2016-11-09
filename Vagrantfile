@@ -42,8 +42,8 @@ master_script = <<SCRIPT
 
 cat > ~/.profile <<EOF
 export SPARK_HOME=/opt/spark
-export PATH=\$SPARK_HOME/bin:/opt/apache-maven-3.3.9/bin/:$PATH
-export SPARK_SLAVES=\$HOME/spark_slaves
+export PATH=\\$SPARK_HOME/bin:/opt/apache-maven-3.3.9/bin/:$PATH
+export SPARK_SLAVES=\\$HOME/spark_slaves
 EOF
 
 cat > ~/spark_slaves <<EOF
@@ -52,10 +52,10 @@ EOF
 
 cat > ~/.bashrc <<EOF
 spark_start() {
-  \$SPARK_HOME/sbin/start-all.sh
+  \\$SPARK_HOME/sbin/start-all.sh
 }
 spark_stop() {
-  \$SPARK_HOME/sbin/stop-all.sh
+  \\$SPARK_HOME/sbin/stop-all.sh
 }
 EOF
 
