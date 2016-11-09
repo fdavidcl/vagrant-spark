@@ -109,7 +109,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   SPARK_NODES.times do |n|
-    config.vm.define "node#{n}" do |node|
+    config.vm.define "node#{n+1}" do |node|
       node.vm.network :private_network, ip: node_ip[n]
       node.vm.hostname = node_host[n]
       
