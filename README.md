@@ -51,7 +51,7 @@ Once connected as root, you can use the various libraries installed or submit a 
 In this example we will provide a text file to Spark in order to count the ocurrences of each word. First, start up the cluster with
 
 ```sh
-spark_start # alias for /opt/spark/sbin/start-all.sh
+$SPARK_HOME/sbin/start-all.sh
 ```
 
 You can check the active nodes on the web GUI at `localhost:8080`.
@@ -71,7 +71,7 @@ spark-submit --class com.examples.MainExample \
 When the task is completed, you will be able to see the results inside the `examples/quijote_out` directory. Finally, stop the cluster with:
 
 ```sh
-spark_stop # alias for /opt/spark/sbin/stop-all.sh
+$SPARK_HOME/sbin/stop-all.sh
 ```
 
 ### Spark

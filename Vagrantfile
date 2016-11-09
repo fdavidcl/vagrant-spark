@@ -50,15 +50,6 @@ cat > ~/spark_slaves <<EOF
 #{node_host.join "\n"}
 EOF
 
-cat > ~/.bashrc <<EOF
-spark_start() {
-  \\$SPARK_HOME/sbin/start-all.sh
-}
-spark_stop() {
-  \\$SPARK_HOME/sbin/stop-all.sh
-}
-EOF
-
 mkdir -p ~/.ssh
 echo "#{master_private}" > ~/.ssh/id_rsa
 chmod 0600 ~/.ssh/id_rsa
